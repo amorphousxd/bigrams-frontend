@@ -1,0 +1,54 @@
+body {
+	zoom: 0.75;
+	-ms-zoom: 0.75;
+	-webkit-zoom: 0.75;
+	-moz-transform:  scale(0.75,0.75);
+	-moz-transform-origin: left center;
+}
+
+table {
+	border-bottom: 3px solid #ee6e73 !important;
+}
+
+tbody {
+	display: block;
+}
+
+thead tr {
+	display: block;
+	position: relative;
+}
+
+tbody tr {
+  min-height: 61px;
+  height: 61px;
+}
+
+tr.selected {
+	background-color: #ee6e73 !important;
+	color: white;
+}
+
+tbody {
+	height: 425px;
+	overflow: -moz-scrollbars-vertical;
+	overflow-y: scroll;
+	width: 100%;
+}
+
+td:nth-child(2), th:nth-child(2) {
+	min-width: 80px;
+	text-align: center;
+}
+td:nth-child(3), th:nth-child(3) {
+	width: 60px;
+	text-align: center;
+}
+
+.table-name {
+	min-height: 26px;
+}
+
+.pointer {
+	cursor: pointer;
+}

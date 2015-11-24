@@ -1,5 +1,5 @@
 import { compose, createStore, applyMiddleware, combineReducers } from 'redux';
-import createHistory from 'history/lib/createBrowserHistory';
+import createHistory from 'history/lib/createHashHistory';
 import { reduxReactRouter, routerStateReducer as router } from 'redux-router';
 import { devTools, persistState } from 'redux-devtools';
 import thunk from 'redux-thunk';
