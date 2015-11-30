@@ -23,9 +23,8 @@ class ResultsTable extends React.Component {
 	}
 
 	checkResult(index){
-		let {results} = this.state;
-		results[index].checked = !!!results[index].checked;
-		this.setState({results});
+		console.log(this.state.results);
+		this.props.onResultCheckedChange(index);
 	}
 
 	onFilterChange(e) {
@@ -61,7 +60,8 @@ class ResultsTable extends React.Component {
         style: {width: 80}
       }
 		];
-    if(name) columnsMetadata = [
+    if (name)
+		columnsMetadata = [
 			{
 				name: 'word',
 				displayName: 'Слово',

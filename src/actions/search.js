@@ -111,6 +111,14 @@ export function clearResults(){
   }
 }
 
+export function resultsCheckedChange(partOfSpeechName, index) {
+  return {
+    type: types.RESULTS_INDEX_CHECKED_CHANGE,
+    partOfSpeechName,
+    index,
+  }
+}
+
 export function changeAllFormsStatus(partOfSpeechName){
   return {
     type: types.COMPOSITION_ALL_FORMS_STATUS_CHANGE,

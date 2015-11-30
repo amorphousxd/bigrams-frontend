@@ -134,8 +134,8 @@ export class Row extends React.Component {
       };
 			if(c.customComponent && !titlesOnly){
 				return <CheckboxColumn {...props}
-                                checked={data.checked}
-                                action={c.customComponent.action} />
+                               checked={data.checked}
+                               action={c.customComponent.action} />
 			}
 			return <TextColumn {...props} />
 		});

@@ -19,7 +19,19 @@ const search = handleActions({
 
 	[types.GET_RESULTS_SUCCESS]: (state, { results }) => {
   	state = state.set('inProcess', false);
-		state = state.set('results', results);
+		for( let prop in results ) {
+			if (prop.indexOf('forms') === -1  && results[prop+'_forms']) {
+				const partOfSpeechIndex = state.getIn(['composition', 'partsOfSpeech'])
+																			 .findIndex( (partOfSpeech ) => partOfSpeech.get('name') === prop);
+				let selectedForms = state.getIn(['composition', 'partsOfSpeech', partOfSpeechIndex, 'forms', 'selected']).toJS();
+				results[prop+'_forms'].map( result => {
+					if (selectedForms.indexOf(result.word) > -1 ) {
+						result.checked = true;
+					}
+				})
+			}
+		}
+		state = state.set('results', Immutable.fromJS(results));
 
 		return state;
 	},
@@ -44,6 +56,33 @@ const search = handleActions({
 		}
 
   	return state;
+	},
+
+	[types.RESULTS_INDEX_CHECKED_CHANGE]: (state, { partOfSpeechName, index }) => {
+		let checked;
+		const partOfSpeechIndex = state.getIn(['composition', 'partsOfSpeech'])
+																	 .findIndex( (partOfSpeech ) => partOfSpeech.get('name') === partOfSpeechName);
+		const result = state.getIn(['results', partOfSpeechName+'_forms', index]);
+		const results = state.getIn(['results', partOfSpeechName+'_forms'])
+												 .map( (result, i) => {
+													 if (i === index) {
+														 checked = ! !!result.get('checked');
+														 result = result.set('checked',  ! !!result.get('checked'));
+													 }
+													 return result;
+												 });
+    state = state.setIn(['results', partOfSpeechName+'_forms'], results);
+		let selectedForms = state.getIn(['composition', 'partsOfSpeech', partOfSpeechIndex, 'forms', 'selected']);
+		if (checked === true) {
+			selectedForms = selectedForms.push(result.get('word'))
+		} else {
+			const indexOfSelectedWord = selectedForms.findIndex( (word) => word === result.get('word'));
+			selectedForms = selectedForms.delete(indexOfSelectedWord);
+		}
+
+		state = state.setIn(['composition', 'partsOfSpeech', partOfSpeechIndex, 'forms', 'selected'], selectedForms);
+
+		return state;
 	},
 
 	[types.COMPOSITION_SET_SELECTED]: (state, { partOfSpeechName, value }) => {

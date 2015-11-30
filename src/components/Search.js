@@ -29,10 +29,11 @@ class Search extends Component {
 	}
 
   render() {
-    const { search, results, clearResults, composition, inProcess } = this.props;
+    const { search, clearResults, composition, inProcess } = this.props;
 		const { query, allFormsStatuses } = this.state;
 		const compositionsOptions = compositions.map( (composition) => ({value: composition.get('name'), label: composition.get('nameLocalized')})).toJS();
 		let inputs = [], tables = [];
+		let results = this.props.results ? this.props.results.toJS() : [];
 
 		composition.get('partsOfSpeech')
 		.map( (p, i) => {
@@ -68,7 +69,8 @@ class Search extends Component {
 			if(results[p.get('name')+'_forms']){
 				tables.push(
 					<div key={i+'table_forms'} className="col s3">
-						<ResultsTable results={results[p.get('name')+'_forms']}/>
+						<ResultsTable results={results[p.get('name')+'_forms']}
+													onResultCheckedChange={this.onResultCheckedChange.bind(this, p.get('name'))}/>
 				 	</div>
 				);
 			}
@@ -129,20 +131,25 @@ class Search extends Component {
 		this.props.getResults(this.props.composition);
 	}
 
-	onQueryChange(partOfSpeech, e){
+	onQueryChange(partOfSpeech, e) {
 		const { query } = this.state;
 		query[partOfSpeech] = e.target.value;
 		this.setState({query});
 	}
 
-	onCompositionChange(value){
+	onCompositionChange(value) {
 		const composition = compositions.find((c) => c.get('name') === value);
 		this.props.setComposition(composition);
 	}
 
-	async onAllFormsChange(partOfSpeechName){
+	async onAllFormsChange(partOfSpeechName) {
 		await this.props.changeAllFormsStatus(partOfSpeechName);
 		await this.props.setCompositionQuery(this.state.query);
+		this.props.getResults(this.props.composition);
+	}
+
+	async onResultCheckedChange(partOfSpeechName, index) {
+		await this.props.resultsCheckedChange(partOfSpeechName, index);
 		this.props.getResults(this.props.composition);
 	}
 
@@ -155,7 +162,6 @@ Search.propTypes = {
 	composition: PropTypes.object,
 	inProcess: PropTypes.boolean,
 };
-
 
 function mapStateToProps(state) {
   return {

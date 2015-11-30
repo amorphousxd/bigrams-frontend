@@ -7,11 +7,11 @@ import { DevTools, DebugPanel, LogMonitor } from 'redux-devtools/lib/react';
 import { ReduxRouter } from 'redux-router';
 import store from './config/store';
 
-const DEBUG_PANEL = (
-  <DebugPanel top right bottom>
-    <DevTools store={store} monitor={LogMonitor} />
-  </DebugPanel>
-);
+// const DEBUG_PANEL = (
+//   <DebugPanel top right bottom>
+//     <DevTools store={store} monitor={LogMonitor} />
+//   </DebugPanel>
+// );
 
 render(
 	<div>

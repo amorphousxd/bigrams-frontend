@@ -7,6 +7,7 @@ export const GET_RESULTS_INIT = 'search.getResults.init';
 export const GET_RESULTS_SUCCESS = 'search.getResults.succeeded';
 export const GET_RESULTS_FAIL = 'search.getResults.failed';
 export const CLEAR_RESULTS = 'search.clearResults';
+export const RESULTS_INDEX_CHECKED_CHANGE = 'search.results.indexCheckedChange';
 
 // COMPOSITION
 export const COMPOSITION_SET = 'search.composition.set';
