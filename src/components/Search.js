@@ -1,14 +1,17 @@
 import React, { Component, PropTypes } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import * as SearchActions from '../actions/search';
-import Nav from './partials/Nav.js';
-import Select from 'react-select';
-import _ from 'lodash';
-import ResultsTable from './ResultsTable';
-import { compositions } from 'config/data';
 import { Map, List } from 'immutable';
-import { Loader } from './partials/Loader';
+import _ from 'lodash';
+
+import * as SearchActions from '../actions/search';
+import ResultsTable from './ResultsTable';
+import Loader from './partials/Loader';
+import Form from './partials/Form.js';
+import Button from './partials/Button.js';
+import CompositionSelect from './partials/CompositionSelect.js';
+import PartOfSpeechInput from './partials/PartOfSpeechInput.js';
+import { compositions } from 'config/data';
 
 class Search extends Component {
 
@@ -18,9 +21,7 @@ class Search extends Component {
 
 		this.onQueryChange = this.onQueryChange.bind(this);
 		this.onCompositionChange = this.onCompositionChange.bind(this);
-		this.onAllFormsChange = this.onAllFormsChange.bind(this);
 		this.search = this.search.bind(this);
-		this.onSelectedChange = this.onSelectedChange.bind(this);
 
 		this.state = {
 			query: {},
@@ -28,30 +29,39 @@ class Search extends Component {
 
 	}
 
+	componentWillReceiveProps(props) {
+	}
+
+	componentDidUpdate(props) {
+		const compositionHasChanged = ! !!_.isEqual(props.composition.toJS(), this.props.composition.toJS());
+		const previousCompositionWasNotInitial = _.keys(props.composition.toJS().partsOfSpeech).length > 0;
+		const fetchData = compositionHasChanged && previousCompositionWasNotInitial;
+		if (fetchData) {
+			console.info('FETCHING DATA');
+			this.props.getResults(this.props.composition);
+		}
+	}
+
   render() {
     const { search, clearResults, composition, inProcess } = this.props;
 		const { query, allFormsStatuses } = this.state;
-		const compositionsOptions = compositions.map( (composition) => ({value: composition.get('name'), label: composition.get('nameLocalized')})).toJS();
-		let inputs = [], tables = [];
+		let inputs = [];
+		let tables = [];
 		let results = this.props.results ? this.props.results.toJS() : [];
 
 		composition.get('partsOfSpeech')
 		.map( (p, i) => {
 			inputs.push(
-				<div key={i} className="col s3">
-					<label>{p.get('nameLocalized')}</label>
-					<input type="text" value={query[p.get('name')]} onChange={this.onQueryChange.bind(null, p.get('name'))}/>
-					<div onClick={this.onAllFormsChange.bind(null, p.get('name'))}>
-						<input type="checkbox" name={p.name + '_all'} checked={p.get('allForms')}  />
-		      	<label>Выбрать форму</label>
-					</div>
-				</div>
+				<PartOfSpeechInput key={i}
+													 name={p.get('nameLocalized')}
+													 value={query[p.get('name')]}
+													 onChange={this.onQueryChange.bind(null, p.get('name'))}
+													 onAllFormsChange={this.props.changeAllFormsStatus.bind(null, p.get('name'))}
+													 checked={p.get('allForms')} />
 			);
-			if(results[`${p.get('name')}_forms`] && i === 0) {
-				inputs.push(
-					<div key={i+'_offset'} className="col s3" style={{height: 1}}></div>
-				)
-			}
+			// if(results[`${p.get('name')}_forms`] && i === 0) {
+			// 	inputs.push(<div key={i+'_offset'} className="col s3" style={{height: 1}}></div>);
+			// }
 		});
 
 		composition.get('partsOfSpeech')
@@ -62,7 +72,7 @@ class Search extends Component {
 				<div key={i+'table'} className="col s3">
 					<ResultsTable name={p.get('nameLocalized')}
 												results={results[p.get('name')]}
-												onSelectedChange={this.onSelectedChange.bind(null, p.get('name'))}
+												onSelectedChange={this.props.setCompositionSelected.bind(null, p.get('name'))}
 												selected={selected} />
 			 	</div>
 			);
@@ -80,36 +90,23 @@ class Search extends Component {
 			<div className="col s12">
 				<div className="row">
 					<div className="col s3">
-						<Select name="form-field-name"
-										backspaceRemoves={false}
-										clearable={false}
-										placeholder="Выберите тип словосочетания"
-										searchingText="Поиск"
-										noResultsText="Ничего не найдено"
-										value={composition.get('name')}
-										options={compositionsOptions} onChange={this.onCompositionChange} />
+						<CompositionSelect value={composition.get('name')}
+						 									 onChange={this.onCompositionChange} />
 					</div>
 				</div>
 
 	      <div className="row">
-					<form autoComplete="off" onSubmit={this.search}>
-					<input style={{display:'none'}}/>
-					<input type="password" style={{display:'none'}}/>
+					<Form onSubmit={this.search}>
+						{inputs}
 
-					{inputs}
+						{inputs.length ?
+							<div className="col s3">
+								<Button style={{marginTop: 30}} onClick={this.search}>Поиск</Button>
+								<Loader active={inProcess} style={{marginTop: 20}} />
+							</div>
+						: ''}
 
-					{inputs.length ?
-						<div className="col s3">
-							<div className="col s6">
-								<button className="waves-effect waves-light btn" style={{marginTop: 30}} type="button" onClick={this.search}>Поиск</button>
-							</div>
-							<div style={{marginTop: 20}}>
-								<Loader active={inProcess}/>
-							</div>
-						</div>
-					: ''}
-					<input type="submit" style={{display: 'none'}} />
-					</form>
+					</Form>
 	      </div>
 
 				<div className="row">
@@ -120,15 +117,9 @@ class Search extends Component {
     );
   }
 
-	async search(e, d){
+	search(e, d){
 		e.preventDefault();
-		await this.props.setCompositionQuery(this.state.query);
-		this.props.getResults(this.props.composition);
-	}
-
-	async onSelectedChange(partOfSpeech, value) {
-		await this.props.setCompositionSelected(partOfSpeech, value);
-		this.props.getResults(this.props.composition);
+		this.props.setCompositionQuery(this.state.query);
 	}
 
 	onQueryChange(partOfSpeech, e) {
@@ -142,16 +133,8 @@ class Search extends Component {
 		this.props.setComposition(composition);
 	}
 
-	async onAllFormsChange(partOfSpeechName) {
-		await this.props.changeAllFormsStatus(partOfSpeechName);
-		if (_.keys(this.state.query).length === 0) return;
-		await this.props.setCompositionQuery(this.state.query);
-		this.props.getResults(this.props.composition);
-	}
-
-	async onResultCheckedChange(partOfSpeechName, index) {
-		await this.props.resultsCheckedChange(partOfSpeechName, index);
-		this.props.getResults(this.props.composition);
+	onResultCheckedChange(partOfSpeechName, index) {
+		this.props.resultsCheckedChange(partOfSpeechName, index);
 	}
 
 }

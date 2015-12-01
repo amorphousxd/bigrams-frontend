@@ -1,10 +1,10 @@
 import React from 'react';
 
-export const Loader = ({active}) => {
+const Loader = ({active, style}) => {
 	let className = "preloader-wrapper big";
 	if (active) className += " active";
 	return (
-		<div className={className}>
+		<div className={className} style={style}>
 			<div className="spinner-layer spinner-green-only">
 				<div className="circle-clipper left">
 					<div className="circle"></div>
@@ -18,4 +18,6 @@ export const Loader = ({active}) => {
 			</div>
 		</div>
 	)
-}
+};
+
+export default Loader;

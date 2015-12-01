@@ -9,7 +9,7 @@ import reducer from '../reducers';
 const store = compose(
   applyMiddleware(thunk),
   reduxReactRouter({ routes, createHistory }),
-  devTools(),
+  //devTools(),
   persistState(window.location.href.match(/[?&]debug_session=([^&]+)\b/))
 )(createStore)(reducer);
 

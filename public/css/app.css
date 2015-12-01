@@ -1,10 +1,10 @@
-body {
+/*body {
 	zoom: 0.75;
 	-ms-zoom: 0.75;
 	-webkit-zoom: 0.75;
 	-moz-transform:  scale(0.75,0.75);
 	-moz-transform-origin: left center;
-}
+}*/
 
 table {
 	border-bottom: 3px solid #ee6e73 !important;
