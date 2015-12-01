@@ -5,7 +5,7 @@ import * as types from 'constants/search';
 const initialState = Immutable.fromJS({
 	results: {},
 	composition: {
-		partsOfSpeech: [],
+		partsOfSpeech: {},
 	},
 	settings: {},
 	inProcess: false
@@ -20,11 +20,9 @@ const search = handleActions({
 	[types.GET_RESULTS_SUCCESS]: (state, { results }) => {
   	state = state.set('inProcess', false);
 		for( let prop in results ) {
-			if (prop.indexOf('forms') === -1  && results[prop+'_forms']) {
-				const partOfSpeechIndex = state.getIn(['composition', 'partsOfSpeech'])
-																			 .findIndex( (partOfSpeech ) => partOfSpeech.get('name') === prop);
-				let selectedForms = state.getIn(['composition', 'partsOfSpeech', partOfSpeechIndex, 'forms', 'selected']).toJS();
-				results[prop+'_forms'].map( result => {
+			if (prop.indexOf('forms') === -1  && results[`${prop}_forms`]) {
+				let selectedForms = state.getIn(['composition', 'partsOfSpeech', prop, 'forms', 'selected']).toJS();
+				results[`${prop}_forms`].map( result => {
 					if (selectedForms.indexOf(result.word) > -1 ) {
 						result.checked = true;
 					}
@@ -41,7 +39,7 @@ const search = handleActions({
 	},
 
 	[types.CLEAR_RESULTS]: (state) => {
-		return state.set('results', List([]));
+		return state.set('results', Map({}));
 	},
 
 	[types.COMPOSITION_SET]: (state, { composition }) => {
@@ -50,61 +48,43 @@ const search = handleActions({
 
 	[types.COMPOSITION_SET_QUERY]: (state, { query }) => {
 		for(let prop in query){
-			const partOfSpeechIndex = state.getIn(['composition', 'partsOfSpeech'])
-																		 .findIndex( (partOfSpeech ) => partOfSpeech.get('name') === prop);
-      state = state.setIn(['composition', 'partsOfSpeech', partOfSpeechIndex, 'query'], query[prop]);
+      state = state.setIn(['composition', 'partsOfSpeech', prop, 'query'], query[prop]);
 		}
 
   	return state;
 	},
 
 	[types.RESULTS_INDEX_CHECKED_CHANGE]: (state, { partOfSpeechName, index }) => {
-		let checked;
-		const partOfSpeechIndex = state.getIn(['composition', 'partsOfSpeech'])
-																	 .findIndex( (partOfSpeech ) => partOfSpeech.get('name') === partOfSpeechName);
-		const result = state.getIn(['results', partOfSpeechName+'_forms', index]);
-		const results = state.getIn(['results', partOfSpeechName+'_forms'])
-												 .map( (result, i) => {
-													 if (i === index) {
-														 checked = ! !!result.get('checked');
-														 result = result.set('checked',  ! !!result.get('checked'));
-													 }
-													 return result;
-												 });
-    state = state.setIn(['results', partOfSpeechName+'_forms'], results);
-		let selectedForms = state.getIn(['composition', 'partsOfSpeech', partOfSpeechIndex, 'forms', 'selected']);
-		if (checked === true) {
-			selectedForms = selectedForms.push(result.get('word'))
+		let result = state.getIn(['results', `${partOfSpeechName}_forms`, index]);
+				result = result.set('checked',  ! !!result.get('checked'));
+		const results = state.getIn(['results', `${partOfSpeechName}_forms`]).set(index, result);
+
+		let selectedForms = state.getIn(['composition', 'partsOfSpeech', partOfSpeechName, 'forms', 'selected']);
+		if (result.get('checked') === true) {
+			selectedForms = selectedForms.push(result.get('word'));
 		} else {
-			const indexOfSelectedWord = selectedForms.findIndex( (word) => word === result.get('word'));
-			selectedForms = selectedForms.delete(indexOfSelectedWord);
+			selectedForms = selectedForms.filter( (w) => w === result.get('word') );
 		}
 
-		state = state.setIn(['composition', 'partsOfSpeech', partOfSpeechIndex, 'forms', 'selected'], selectedForms);
+		state = state.setIn(['composition', 'partsOfSpeech', partOfSpeechName, 'forms', 'selected'], selectedForms)
+								 .setIn(['results', `${partOfSpeechName}_forms`], results);
 
 		return state;
 	},
 
 	[types.COMPOSITION_SET_SELECTED]: (state, { partOfSpeechName, value }) => {
-		const partOfSpeechIndex = state.getIn(['composition', 'partsOfSpeech'])
-																	 .findIndex( (partOfSpeech ) => partOfSpeech.get('name') === partOfSpeechName);
-    return state.setIn(['composition', 'partsOfSpeech', partOfSpeechIndex, 'selected'], value);
+    return state.setIn(['composition', 'partsOfSpeech', partOfSpeechName, 'selected'], value);
 	},
 
 	[types.COMPOSITION_ALL_FORMS_STATUS_CHANGE]: (state, { partOfSpeechName }) => {
-		const partOfSpeechIndex = state.getIn(['composition', 'partsOfSpeech'])
-																	 .findIndex( (partOfSpeech ) => partOfSpeech.get('name') === partOfSpeechName);
-		const currentStatus = state.getIn(['composition', 'partsOfSpeech', partOfSpeechIndex, 'allForms']);
+		const currentStatus = state.getIn(['composition', 'partsOfSpeech', partOfSpeechName, 'allForms']);
 
-		return state.setIn(['composition', 'partsOfSpeech', partOfSpeechIndex, 'allForms'], ! !!currentStatus);
+		return state.setIn(['composition', 'partsOfSpeech', partOfSpeechName, 'allForms'], ! !!currentStatus);
 	},
 
-	[types.COMPOSITION_FORMS_CLEAR]: (state) => {
-		const partsOfSpeech = state.getIn(['composition', 'partsOfSpeech'])
-															 .map( (p) => p.set('selectedForms', List([]) ));
-
-  	return state.setIn(['composition', 'partsOfSpeech'], partsOfSpeech);
-	},
+	[types.COMPOSITION_FORMS_CLEAR]: (state) => ({
+  	...state
+	}),
 
 }, initialState);
 

@@ -26,14 +26,9 @@ module.exports = {
   module: {
     loaders: [{
       test: /(.js$|.jsx$)/,
-      loaders: ['react-hot', 'babel'],
+      loaders: ['babel'],
       exclude: /node_modules/,
       include: path.join(__dirname, 'src')
     }]
-		// noParse: ['node_modules/react'],
-    // loaders: [
-    //   { test: /(.js|.jsx)/, exclude: /node_modules/, loaders: ['babel?cacheDirectory=true'] },
-    //   //{ test: /\.css/, loader: 'style!css?modules&importLoaders=1&localIdentName=[name]__[local]___[hash:base64:5]!postcss' },
-    // ],
   }
 };

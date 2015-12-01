@@ -2,8 +2,8 @@ import * as types from 'constants/search';
 
 function getRequestObject(composition){
   let result = {};
-  const {partsOfSpeech} = composition;
-  partsOfSpeech.map( (partOfSpeech) => {
+  const { partsOfSpeech } = composition;
+  _.map(partsOfSpeech, (partOfSpeech) => {
     const {allForms, query, offset, selected, forms} = partOfSpeech;
     result[partOfSpeech.name] = {
       allForms,

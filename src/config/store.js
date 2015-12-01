@@ -11,19 +11,12 @@ import reducer from '../reducers';
 const composeStore = compose(
   applyMiddleware(thunk),
   reduxReactRouter({ routes, createHistory }),
-  //devTools(),
+  devTools(),
   persistState(window.location.href.match(/[?&]debug_session=([^&]+)\b/))
 )(createStore);
 
 const configureStore = (initialState) => {
   const store = composeStore(reducer, initialState);
-
-  // if (module.hot) {
-  //   module.hot.accept('../reducers', () => {
-  //     const nextReducer = require('../reducers');
-  //     store.replaceReducer(nextReducer);
-  //   });
-  // }
 
   return store;
 };
