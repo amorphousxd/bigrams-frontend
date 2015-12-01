@@ -82,9 +82,9 @@ const search = handleActions({
 		return state.setIn(['composition', 'partsOfSpeech', partOfSpeechName, 'allForms'], ! !!currentStatus);
 	},
 
-	[types.COMPOSITION_FORMS_CLEAR]: (state) => ({
-  	...state
-	}),
+	[types.COMPOSITION_FORMS_CLEAR]: (state) => {
+  	return state;
+	},
 
 }, initialState);
 

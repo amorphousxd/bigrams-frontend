@@ -144,7 +144,6 @@ class Search extends Component {
 
 	async onAllFormsChange(partOfSpeechName) {
 		await this.props.changeAllFormsStatus(partOfSpeechName);
-		this.props.getResults(this.props.composition);
 		if (_.keys(this.state.query).length === 0) return;
 		await this.props.setCompositionQuery(this.state.query);
 		this.props.getResults(this.props.composition);
@@ -162,7 +161,7 @@ Search.propTypes = {
 	settings: PropTypes.object.isRequired,
 	results: PropTypes.object.isRequired,
 	composition: PropTypes.object,
-	inProcess: PropTypes.boolean,
+	inProcess: PropTypes.bool,
 };
 
 function mapStateToProps(state) {

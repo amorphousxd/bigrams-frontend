@@ -1,4 +1,5 @@
 import * as types from 'constants/search';
+import _ from 'lodash';
 
 function getRequestObject(composition){
   let result = {};
