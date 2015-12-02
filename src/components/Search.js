@@ -153,7 +153,6 @@ class Search extends Component {
 }
 
 Search.propTypes = {
-  search: PropTypes.func.isRequired,
 	settings: PropTypes.object.isRequired,
 	results: PropTypes.object.isRequired,
 	composition: PropTypes.object,

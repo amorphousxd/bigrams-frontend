@@ -45,8 +45,6 @@ const search = handleActions({
 	},
 
 	[types.COMPOSITION_SELECTED_FORM_CHECK]: (state, { partOfSpeechName, word }) => {
-		//console.log(state.get('results').toJS());
-		//let result = state.getIn(['results', `${partOfSpeechName}_forms`, index]);
 		let selectedForms = state.getIn(['composition', 'partsOfSpeech', partOfSpeechName, 'forms', 'selected']);
 
 		if (selectedForms.indexOf(word) === -1) {

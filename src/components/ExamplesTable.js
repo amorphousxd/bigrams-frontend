@@ -1,9 +1,11 @@
 import React from 'react';
 import Griddle from 'griddle-react';
+import _ from 'lodash';
 
 const ExamplesTable = ({data}) => {
 	if(!data) return <div/>;
 	data = data.map( (d, i) => ({index: i, data: d}) );
+	data = _.filter(data, (d) => d.data.length > 10);
 	const columns = ['index', 'data'];
 	const columnsMetadata = [
 		{
