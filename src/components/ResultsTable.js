@@ -1,6 +1,26 @@
 import React from 'react';
-import {Table} from './Table';
 import _ from 'lodash';
+import Griddle from 'griddle-react';
+
+const CheckboxComponent = ({metadata, rowData}) => {
+	const { action } = metadata;
+	const { rowIndex, checked, word } = rowData;
+	return (
+		<div onClick={action.bind(null, word)}>
+			<input type="checkbox" readOnly checked={checked}/>
+			<label></label>
+		</div>
+	);
+};
+
+const ClickableTextComponent = ({metadata, data}) => {
+	const { action } = metadata;
+	return (
+		<div onClick={action.bind(null, data)} className="pointer">
+			{data}
+		</div>
+	);
+};
 
 
 class ResultsTable extends React.Component {
@@ -8,85 +28,84 @@ class ResultsTable extends React.Component {
 	constructor(props){
 		super(props);
 
-		this.onFilterChange = this.onFilterChange.bind(this);
-		this.checkResult = this.checkResult.bind(this);
-
 		this.state = {
-    	filteredResults: this.results,
 			results: _.sortBy(props.results, (r) => parseInt(r.count)).reverse(),
-			filter: ''
   	};
 	}
 
-	componentWillReceiveProps(nextProps){
+	componentWillReceiveProps(nextProps) {
 		this.setState({results: _.sortBy(nextProps.results, (r) => parseInt(r.count)).reverse()});
 	}
 
-	checkResult(index){
-		console.log(this.state.results);
-		this.props.onResultCheckedChange(index);
-	}
+  render() {
+    const { name, selected, selectedForms = [] } = this.props;
+		let { results } = this.state;
+		let rowMetadata = {};
 
-	onFilterChange(e) {
-		const filter = e.target.value;
-
-		const results = _.filter(this.props.results, (result) => {
-			return result.word.toUpperCase().indexOf(filter.toUpperCase()) > -1;
+		results = results.map( (r, i) => {
+			r.rowIndex = i;
+			r.checked = selectedForms.indexOf(r.word) > -1;
+			r.selected = selected;
+			return r;
 		});
 
-		this.setState({filter, results});
-  }
-
-  render() {
-    const { name, selected } = this.props;
-		const { results } = this.state;
 		let columnsMetadata = [
 			{
-				name: 'word',
+				columnName: 'word',
 				displayName: 'Слово',
-        style: {minWidth: 240},
 			},
 			{
-				name: 'count',
+				columnName: 'count',
 				displayName: 'Кол-во',
 			},
       {
-        name: 'action',
+        columnName: 'action',
         displayName: 'Выбрать',
-        customComponent: {
-          name: 'action',
-          action: this.checkResult
-        },
-        style: {width: 80}
+				customComponent: CheckboxComponent,
+				action: this.props.onResultCheckedChange,
       }
 		];
-    if (name)
-		columnsMetadata = [
-			{
-				name: 'word',
-				displayName: 'Слово',
-        style: {minWidth: 260, paddingLeft: 10},
-        className: 'pointer',
-        onClick: this.props.onSelectedChange,
-			},
-			{
-				name: 'count',
-				displayName: 'Кол-во',
-        style: {minWidth: 130}
-			}
-		];
+		let columns = ['word', 'count', 'action'];
+    if (name) {
+			columnsMetadata = [
+				{
+					columnName: 'word',
+					displayName: 'Слово',
+	        className: 'pointer',
+					customComponent: ClickableTextComponent,
+	        action: this.props.onSelectedChange,
+				},
+				{
+					columnName: 'count',
+					displayName: 'Кол-во',
+				}
+			];
+			columns = ['word', 'count'];
+			rowMetadata = {
+			    "bodyCssClassName": function(rowData) {
+			        if (rowData.word === rowData.selected) {
+			            return "selected-row";
+			        }
+			        return "default-row";
+			    }
+			};
+		}
 
     return (
 			<div>
         <h5 className="table-name">{name}</h5>
-				<input type="text"
-							 value={this.state.filter}
-							 onChange={this.onFilterChange}
-          		 placeholder="Поиск" />
-        <br/>
-        <Table columns={columnsMetadata}
-							 data={results}
-               selected={selected} />
+				<Griddle results={results}
+							 showFilter={true}
+							 columns={columns}
+							 columnMetadata={columnsMetadata}
+							 rowMetadata={rowMetadata}
+							 useGriddleStyles={false}
+							 useFixedHeader={false}
+							 bodyHeight={400}
+							 tableClassName={"bordered"}
+							 enableInfiniteScroll={true}
+							 filterPlaceholderText="Фильтр"
+							 noDataMessage="Нет данных" />
 			</div>
     );
   }

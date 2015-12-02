@@ -19,9 +19,11 @@ class Search extends Component {
 
 		super(props);
 
+		//this.onQueryChange = _.debounce(this.onQueryChange, 400).bind(this);
 		this.onQueryChange = this.onQueryChange.bind(this);
 		this.onCompositionChange = this.onCompositionChange.bind(this);
 		this.search = this.search.bind(this);
+		this.setCompositionQuery = _.debounce(this.setCompositionQuery, 500).bind(this);
 
 		this.state = {
 			query: {},
@@ -50,9 +52,9 @@ class Search extends Component {
 		let results = this.props.results ? this.props.results.toJS() : [];
 
 		composition.get('partsOfSpeech')
-		.map( (p, i) => {
+		.map( (p) => {
 			inputs.push(
-				<PartOfSpeechInput key={i}
+				<PartOfSpeechInput key={p.get('name')}
 													 name={p.get('nameLocalized')}
 													 value={query[p.get('name')]}
 													 onChange={this.onQueryChange.bind(null, p.get('name'))}
@@ -80,7 +82,8 @@ class Search extends Component {
 				tables.push(
 					<div key={i+'table_forms'} className="col s3">
 						<ResultsTable results={results[p.get('name')+'_forms']}
-													onResultCheckedChange={this.onResultCheckedChange.bind(this, p.get('name'))}/>
+													onResultCheckedChange={this.onResultCheckedChange.bind(this, p.get('name'))}
+													selectedForms={p.getIn(['forms', 'selected']).toJS()} />
 				 	</div>
 				);
 			}
@@ -117,7 +120,7 @@ class Search extends Component {
     );
   }
 
-	search(e, d){
+	search(e){
 		e.preventDefault();
 		this.props.setCompositionQuery(this.state.query);
 	}
@@ -126,6 +129,11 @@ class Search extends Component {
 		const { query } = this.state;
 		query[partOfSpeech] = e.target.value;
 		this.setState({query});
+		this.setCompositionQuery(query);
+	}
+
+	setCompositionQuery(query) {
+		this.props.setCompositionQuery(query);
 	}
 
 	onCompositionChange(value) {
@@ -133,8 +141,8 @@ class Search extends Component {
 		this.props.setComposition(composition);
 	}
 
-	onResultCheckedChange(partOfSpeechName, index) {
-		this.props.resultsCheckedChange(partOfSpeechName, index);
+	onResultCheckedChange(partOfSpeechName, word) {
+		this.props.resultsCheckedChange(partOfSpeechName, word);
 	}
 
 }

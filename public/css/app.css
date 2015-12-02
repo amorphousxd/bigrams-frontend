@@ -6,7 +6,7 @@
 	-moz-transform-origin: left center;
 }*/
 
-table {
+/*table {
 	border-bottom: 3px solid #ee6e73 !important;
 }
 
@@ -43,10 +43,15 @@ td:nth-child(2), th:nth-child(2) {
 td:nth-child(3), th:nth-child(3) {
 	width: 60px;
 	text-align: center;
+} */
+
+.selected-row {
+	background-color: #ee6e73 !important;
+	color: white;
 }
 
 .table-name {
-	min-height: 26px;
+	min-height: 28px;
 }
 
 .pointer {

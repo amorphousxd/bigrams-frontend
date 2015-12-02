@@ -20,29 +20,6 @@ function getRequestObject(composition){
 
 }
 
-export function search(query) {
-  return async (dispatch) => {
-
-    dispatch({
-      type: types.SEARCH_PERFORM_INIT,
-    });
-
-    fetch(`http://localhost:3001/${query}?ass[]=wqe&ass[]=wdwddw`, { method: 'get', credentials: 'include' }).then(
-      async (response) => {
-        dispatch({
-          type: types.SEARCH_PERFORM_SUCCESS,
-          result: await response.json(),
-        });
-      },
-      () => {
-        dispatch({
-          type: types.SEARCH_PERFORM_FAIL
-        });
-      }
-    );
-  };
-}
-
 export function getResults(composition){
 
   const requestObject = getRequestObject(composition.toJS());
@@ -51,10 +28,6 @@ export function getResults(composition){
 
     dispatch({
       type: types.GET_RESULTS_INIT,
-    });
-
-    dispatch({
-      type: types.COMPOSITION_FORMS_CLEAR,
     });
 
     fetch(`http://46.101.166.133/api/`, {
@@ -83,6 +56,11 @@ export function setComposition(composition){
   		type: types.CLEAR_RESULTS,
     });
 
+
+    await dispatch({
+      type: types.COMPOSITION_FORMS_CLEAR,
+    });
+
     dispatch({
   		type: types.COMPOSITION_SET,
   		composition,
@@ -99,11 +77,20 @@ export function setCompositionQuery(query){
 }
 
 export function setCompositionSelected(partOfSpeechName, value){
-  return {
-    type: types.COMPOSITION_SET_SELECTED,
-    partOfSpeechName,
-    value,
-  };
+  return async (dispatch) => {
+
+    await dispatch({
+      type: types.COMPOSITION_FORMS_CLEAR,
+      partsOfSpeechToClear: [partOfSpeechName],
+    });
+
+    dispatch({
+      type: types.COMPOSITION_SET_SELECTED,
+      partOfSpeechName,
+      value,
+    })
+
+  }
 }
 
 export function clearResults(){
@@ -112,18 +99,25 @@ export function clearResults(){
   }
 }
 
-export function resultsCheckedChange(partOfSpeechName, index) {
+export function resultsCheckedChange(partOfSpeechName, word) {
   return {
-    type: types.RESULTS_INDEX_CHECKED_CHANGE,
+    type: types.COMPOSITION_SELECTED_FORM_CHECK,
     partOfSpeechName,
-    index,
+    word,
   }
 }
 
 export function changeAllFormsStatus(partOfSpeechName){
-  return {
-    type: types.COMPOSITION_ALL_FORMS_STATUS_CHANGE,
-    partOfSpeechName
+  return async (dispatch) => {
+    await dispatch({
+      type: types.COMPOSITION_FORMS_CLEAR,
+      partsOfSpeechToPass: [partOfSpeechName],
+    });
+
+    dispatch({
+      type: types.COMPOSITION_ALL_FORMS_STATUS_CHANGE,
+      partOfSpeechName
+    })
   }
 }
 

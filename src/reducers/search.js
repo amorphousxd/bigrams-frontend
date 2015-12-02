@@ -19,16 +19,6 @@ const search = handleActions({
 
 	[types.GET_RESULTS_SUCCESS]: (state, { results }) => {
   	state = state.set('inProcess', false);
-		for( let prop in results ) {
-			if (prop.indexOf('forms') === -1  && results[`${prop}_forms`]) {
-				let selectedForms = state.getIn(['composition', 'partsOfSpeech', prop, 'forms', 'selected']).toJS();
-				results[`${prop}_forms`].map( result => {
-					if (selectedForms.indexOf(result.word) > -1 ) {
-						result.checked = true;
-					}
-				})
-			}
-		}
 		state = state.set('results', Immutable.fromJS(results));
 
 		return state;
@@ -54,22 +44,18 @@ const search = handleActions({
   	return state;
 	},
 
-	[types.RESULTS_INDEX_CHECKED_CHANGE]: (state, { partOfSpeechName, index }) => {
-		let result = state.getIn(['results', `${partOfSpeechName}_forms`, index]);
-				result = result.set('checked',  ! !!result.get('checked'));
-		const results = state.getIn(['results', `${partOfSpeechName}_forms`]).set(index, result);
-
+	[types.COMPOSITION_SELECTED_FORM_CHECK]: (state, { partOfSpeechName, word }) => {
+		//console.log(state.get('results').toJS());
+		//let result = state.getIn(['results', `${partOfSpeechName}_forms`, index]);
 		let selectedForms = state.getIn(['composition', 'partsOfSpeech', partOfSpeechName, 'forms', 'selected']);
-		if (result.get('checked') === true) {
-			selectedForms = selectedForms.push(result.get('word'));
+
+		if (selectedForms.indexOf(word) === -1) {
+			selectedForms = selectedForms.push(word);
 		} else {
-			selectedForms = selectedForms.filter( (w) => w === result.get('word') );
+			selectedForms = selectedForms.filter( (w) => w !== word );
 		}
 
-		state = state.setIn(['composition', 'partsOfSpeech', partOfSpeechName, 'forms', 'selected'], selectedForms)
-								 .setIn(['results', `${partOfSpeechName}_forms`], results);
-
-		return state;
+		return state.setIn(['composition', 'partsOfSpeech', partOfSpeechName, 'forms', 'selected'], selectedForms);
 	},
 
 	[types.COMPOSITION_SET_SELECTED]: (state, { partOfSpeechName, value }) => {
@@ -82,8 +68,16 @@ const search = handleActions({
 		return state.setIn(['composition', 'partsOfSpeech', partOfSpeechName, 'allForms'], ! !!currentStatus);
 	},
 
-	[types.COMPOSITION_FORMS_CLEAR]: (state) => {
-  	return state;
+	[types.COMPOSITION_FORMS_CLEAR]: (state, {partsOfSpeechToPass = [], partsOfSpeechToClear = []}) => {
+		let partsOfSpeech = state.getIn(['composition', 'partsOfSpeech'])
+														 .map( (p) => {
+															 if ( (partsOfSpeechToClear.length === 0 && partsOfSpeechToPass.indexOf(p.get('name')) === -1) ||
+														 			 partsOfSpeechToClear.indexOf(p.get('name')) > -1)
+															 p = p.setIn( ['forms', 'selected'], List([]) );
+															 return p;
+														 });
+
+  	return state.setIn(['composition', 'partsOfSpeech'], partsOfSpeech);
 	},
 
 }, initialState);
