@@ -6,44 +6,9 @@
 	-moz-transform-origin: left center;
 }*/
 
-/*table {
+.griddle {
 	border-bottom: 3px solid #ee6e73 !important;
 }
-
-tbody {
-	display: block;
-}
-
-thead tr {
-	display: block;
-	position: relative;
-}
-
-tbody tr {
-  min-height: 61px;
-  height: 61px;
-}
-
-tr.selected {
-	background-color: #ee6e73 !important;
-	color: white;
-}
-
-tbody {
-	height: 425px;
-	overflow: -moz-scrollbars-vertical;
-	overflow-y: scroll;
-	width: 100%;
-}
-
-td:nth-child(2), th:nth-child(2) {
-	min-width: 80px;
-	text-align: center;
-}
-td:nth-child(3), th:nth-child(3) {
-	width: 60px;
-	text-align: center;
-} */
 
 .selected-row {
 	background-color: #ee6e73 !important;

@@ -6,6 +6,7 @@ import _ from 'lodash';
 
 import * as SearchActions from '../actions/search';
 import ResultsTable from './ResultsTable';
+import ExamplesTable from './ExamplesTable';
 import Loader from './partials/Loader';
 import Form from './partials/Form.js';
 import Button from './partials/Button.js';
@@ -114,6 +115,10 @@ class Search extends Component {
 
 				<div className="row">
 					{tables}
+				</div>
+
+				<div className="row">
+					<ExamplesTable data={results.examples} />
 				</div>
 
 			</div>
