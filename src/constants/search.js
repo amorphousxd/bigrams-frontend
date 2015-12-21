@@ -16,3 +16,5 @@ export const COMPOSITION_ALL_FORMS_STATUS_CHANGE = 'search.composition.allFormsS
 export const COMPOSITION_SELECTED_FORM_CHECK = 'search.composition.selectedFormCheck';
 export const COMPOSITION_FORMS_CLEAR = 'search.composition.formsClear';
 export const COMPOSITION_FORMS_SELECT = 'search.composition.formSelect';
+export const COMPOSITION_SWITCH = 'search.composition.switch';
+export const COMPOSITION_SELECT_ALL_FORMS = 'search.composition.selectAllForms';

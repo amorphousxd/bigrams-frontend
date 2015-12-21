@@ -1,5 +1,6 @@
 import { handleActions } from 'redux-actions';
 import Immutable, { Map, List } from 'immutable';
+import { compositions } from 'config/data';
 import * as types from 'constants/search';
 
 const initialState = Immutable.fromJS({
@@ -37,7 +38,7 @@ const search = handleActions({
 	},
 
 	[types.COMPOSITION_SET_QUERY]: (state, { query }) => {
-		for(let prop in query){
+		for (let prop in query) {
       state = state.setIn(['composition', 'partsOfSpeech', prop, 'query'], query[prop]);
 		}
 
@@ -76,6 +77,19 @@ const search = handleActions({
 														 });
 
   	return state.setIn(['composition', 'partsOfSpeech'], partsOfSpeech);
+	},
+
+	[types.COMPOSITION_SWITCH]: (state, {compositionName, partOfSpeechName, word}) => {
+		let composition = compositions.find((c) => c.get('name') === compositionName);
+		composition = composition.setIn(['partsOfSpeech', partOfSpeechName, 'query'], word)
+														 .setIn(['partsOfSpeech', partOfSpeechName, 'selected'], word);
+
+		return state.set('composition', composition);
+
+	},
+
+	[types.COMPOSITION_SELECT_ALL_FORMS]: (state, {partsOfSpeechName}) => {
+		return state;
 	},
 
 }, initialState);

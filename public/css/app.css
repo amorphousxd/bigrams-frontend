@@ -15,10 +15,20 @@
 	color: white;
 }
 
+.default-row, .selected-row{
+	min-height: 73px;
+	height: 73px;
+}
+
 .table-name {
 	min-height: 28px;
 }
 
 .pointer {
 	cursor: pointer;
+}
+
+.selected-row a {
+	color: white;
+	text-decoration: underline;
 }

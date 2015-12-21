@@ -16,6 +16,7 @@ export const compositions = Immutable.fromJS([
 				},
 				selected: '',
 				offset: 0,
+				main: true,
 			},
 			'adj': {
 				name: 'adj',
@@ -28,8 +29,43 @@ export const compositions = Immutable.fromJS([
 				},
 				selected: '',
 				offset: 0,
+				main: false,
 			}
-		}
+		},
+		opposite: 'ADJ N'
+	},
+	{
+		name: 'ADJ N',
+		nameLocalized: 'Прил. + Сущ.',
+		partsOfSpeech: {
+			'adj': {
+				name: 'adj',
+				nameLocalized: 'Прилагательное',
+				allForms: false,
+				query: '',
+				forms: {
+					offset: 200,
+					selected: []
+				},
+				selected: '',
+				offset: 0,
+				main: true,
+			},
+			'noun': {
+				name: 'noun',
+				nameLocalized: 'Существительное',
+				allForms: false,
+				query: '',
+				forms: {
+					offset: 200,
+					selected: []
+				},
+				selected: '',
+				offset: 0,
+				main: false,
+			}
+		},
+		opposite: 'N ADJ'
 	},
 	/*{
 		name: 'V N',

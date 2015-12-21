@@ -22,6 +22,19 @@ const ClickableTextComponent = ({metadata, data}) => {
 	);
 };
 
+const ActionsComponent = ({metadata, data, rowData}) => {
+	const {switchForm, selectAllForms} = metadata;
+	const { word, allForms } = rowData;
+	return (
+		<div>
+			{allForms ?
+			<a className="pointer" onClick={selectAllForms.bind(null, word)}>Примеры <br/></a>
+			: ''}
+			<a className="pointer" onClick={switchForm.bind(null, word)}>Подробнее</a>
+		</div>
+	)
+};
+
 
 class ResultsTable extends React.Component {
 
@@ -39,13 +52,22 @@ class ResultsTable extends React.Component {
 
   render() {
     const { name, selected, selectedForms = [] } = this.props;
+
 		let { results } = this.state;
-		let rowMetadata = {};
+		let rowMetadata = {
+				"bodyCssClassName": function(rowData) {
+						if (rowData.word === rowData.selected) {
+								return "selected-row";
+						}
+						return "default-row";
+				}
+		};
 
 		results = results.map( (r, i) => {
 			r.rowIndex = i;
 			r.checked = selectedForms.indexOf(r.word) > -1;
 			r.selected = selected;
+			r.allForms = this.props.allForms;
 			return r;
 		});
 
@@ -78,34 +100,37 @@ class ResultsTable extends React.Component {
 				{
 					columnName: 'count',
 					displayName: 'Кол-во',
+				},
+				{
+					columnName: 'actions',
+					displayName: 'Действия',
+					customComponent: ActionsComponent,
+					switchForm: this.props.switchForm,
+					selectAllForms: this.props.selectAllForms,
+					allFormsChecked: this.props.allForms,
 				}
 			];
 			columns = ['word', 'count'];
-			rowMetadata = {
-			    "bodyCssClassName": function(rowData) {
-			        if (rowData.word === rowData.selected) {
-			            return "selected-row";
-			        }
-			        return "default-row";
-			    }
-			};
+			if (this.props.main === false) {
+				columns.push('actions');
+			}
 		}
 
     return (
 			<div>
         <h5 className="table-name">{name}</h5>
 				<Griddle results={results}
-							 showFilter={true}
-							 columns={columns}
-							 columnMetadata={columnsMetadata}
-							 rowMetadata={rowMetadata}
-							 useGriddleStyles={false}
-							 useFixedHeader={false}
-							 bodyHeight={400}
-							 tableClassName={"bordered"}
-							 enableInfiniteScroll={true}
-							 filterPlaceholderText="Фильтр"
-							 noDataMessage="Нет данных" />
+								 showFilter={true}
+								 columns={columns}
+								 columnMetadata={columnsMetadata}
+								 rowMetadata={rowMetadata}
+								 useGriddleStyles={false}
+								 useFixedHeader={false}
+								 bodyHeight={400}
+								 tableClassName={"bordered"}
+								 enableInfiniteScroll={true}
+								 filterPlaceholderText="Фильтр"
+								 noDataMessage="Нет данных" />
 			</div>
     );
   }

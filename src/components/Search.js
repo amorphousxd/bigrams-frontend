@@ -25,6 +25,8 @@ class Search extends Component {
 		this.onCompositionChange = this.onCompositionChange.bind(this);
 		this.search = this.search.bind(this);
 		this.setCompositionQuery = _.debounce(this.setCompositionQuery, 500).bind(this);
+		this.switchForm = this.switchForm.bind(this);
+		this.selectAllForms = this.selectAllForms.bind(this);
 
 		this.state = {
 			query: {},
@@ -73,13 +75,17 @@ class Search extends Component {
 			const selected = p.get('allForms') ? p.get('selected') : '';
 			tables.push(
 				<div key={i+'table'} className="col s3">
-					<ResultsTable name={p.get('nameLocalized')}
+					<ResultsTable main={p.get('main')}
+												name={p.get('nameLocalized')}
 												results={results[p.get('name')]}
 												onSelectedChange={this.props.setCompositionSelected.bind(null, p.get('name'))}
-												selected={selected} />
+												switchForm={this.switchForm.bind(null, composition.get('opposite'), p.get('name'))}
+												selectAllForms={this.selectAllForms.bind(null, p.get('name'))}
+												selected={p.get('selected')}
+												allForms={p.get('allForms')} />
 			 	</div>
 			);
-			if(results[p.get('name')+'_forms']){
+			if (results[p.get('name')+'_forms']) {
 				tables.push(
 					<div key={i+'table_forms'} className="col s3">
 						<ResultsTable results={results[p.get('name')+'_forms']}
@@ -148,6 +154,18 @@ class Search extends Component {
 
 	onResultCheckedChange(partOfSpeechName, word) {
 		this.props.resultsCheckedChange(partOfSpeechName, word);
+	}
+
+	switchForm(compositionName, partOfSpeechName, word) {
+		const query = {};
+		query[partOfSpeechName] = word;
+
+		this.setState({query});
+		this.props.switchForm(compositionName, partOfSpeechName, word);
+	}
+
+	async selectAllForms(partOfSpeechName, word) {
+		await this.props.setCompositionSelected(partOfSpeechName, word);
 	}
 
 }
