@@ -4,9 +4,12 @@ import _ from 'lodash';
 function getRequestObject(composition){
   let result = {};
   const { partsOfSpeech } = composition;
-  _.map(partsOfSpeech, (partOfSpeech) => {
+
+  _.map(partsOfSpeech, (partOfSpeech, k, index,i ) => {
+    const direction = partOfSpeech.main ? 'left' : 'right';
     const {allForms, query, offset, selected, forms} = partOfSpeech;
-    result[partOfSpeech.name] = {
+    result[direction] = {
+      partOfSpeech: partOfSpeech.name,
       allForms,
       query,
       forms,
