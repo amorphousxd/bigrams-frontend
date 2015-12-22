@@ -16,6 +16,8 @@ function getRequestObject(composition){
     return partOfSpeech;
   });
 
+  result.direction = composition.direction;
+
   return result;
 
 }

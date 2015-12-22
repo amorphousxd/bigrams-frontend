@@ -30,9 +30,10 @@ export const compositions = Immutable.fromJS([
 				selected: '',
 				offset: 0,
 				main: false,
-			}
+			},
 		},
-		opposite: 'ADJ N'
+		opposite: 'ADJ N',
+		direction: 'normal'
 	},
 	{
 		name: 'ADJ N',
@@ -65,7 +66,8 @@ export const compositions = Immutable.fromJS([
 				main: false,
 			}
 		},
-		opposite: 'N ADJ'
+		opposite: 'N ADJ',
+		direction: 'reversed'
 	},
 	/*{
 		name: 'V N',
